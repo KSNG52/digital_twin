@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Цифровой двойник — безэкипажное судно</title>
+<style>
+:root{--bg:#07111d;--panel:#0d1b2a;--panel2:#102338;--line:#1d3a50;--text:#e8f2fa;--muted:#8ca6b9;--cyan:#31d7e8;--green:#58e0ae;--amber:#ffcb70;--red:#ff6e7a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#17334b 0, var(--bg) 55%);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 24px;border-bottom:1px solid var(--line);background:#081522e8;position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:38px;height:38px;border:1px solid #2b8195;border-radius:12px;display:grid;place-items:center;color:var(--cyan);font-size:22px;background:#0d2b3b}.eyebrow{font-size:10px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase}.brand h1{font-size:17px;margin:2px 0 0}.header-right{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px}.live-dot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;margin-right:6px;box-shadow:0 0 10px #58e0ae}
+main{max-width:1500px;margin:auto;padding:20px;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.85fr);gap:16px}.left,.right{display:flex;flex-direction:column;gap:16px}.panel{background:linear-gradient(145deg,#0d1c2b,#0a1724);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 30px #0002}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}.panel-head h2{font-size:13px;margin:0;font-weight:650;letter-spacing:.3px}.sub{font-size:11px;color:var(--muted)}.tag{font-size:10px;padding:4px 8px;border-radius:6px;border:1px solid #256274;color:var(--cyan);background:#0c2a39}
+.map-wrap{position:relative;height:365px;background:#081a29}.map-wrap canvas{width:100%;height:100%;display:block}.map-overlay{position:absolute;left:14px;top:14px;background:#071522d9;border:1px solid #214359;border-radius:9px;padding:9px 11px;font-size:11px;color:var(--muted)}.map-overlay b{display:block;color:var(--text);font-size:13px;margin-bottom:2px}.map-legend{display:flex;gap:14px;flex-wrap:wrap;padding:10px 15px;color:var(--muted);font-size:11px;border-top:1px solid var(--line)}.key{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}.controls{display:flex;gap:8px;flex-wrap:wrap;padding:13px 15px;border-top:1px solid var(--line)}
+button{border:1px solid #2a536b;background:#122c40;color:var(--text);padding:9px 13px;border-radius:9px;font:inherit;font-size:12px;cursor:pointer;transition:.15s}button:hover{filter:brightness(1.2);transform:translateY(-1px)}button.primary{background:#087d91;border-color:#1ab5c6;color:white}button.danger{border-color:#733944;color:#ff9da6;background:#301a25}button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px}.metric{padding:13px;background:#0a1927;border:1px solid #19364b;border-radius:12px;min-width:0}.metric .label{font-size:10px;color:var(--muted);margin-bottom:8px}.metric .value{font-size:23px;font-weight:650;letter-spacing:-.5px;white-space:nowrap}.metric .unit{font-size:11px;color:var(--muted);margin-left:3px}.metric .foot{font-size:10px;color:var(--green);margin-top:7px}.metric.warn .value{color:var(--amber)}
+.boat-scene{height:230px;display:grid;place-items:center;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 70%,#12405a 0,#0b2235 45%,#091725 75%)}.grid-floor{position:absolute;inset:30% -20% -40%;transform:perspective(250px) rotateX(55deg);background-image:linear-gradient(#1e6076 1px,transparent 1px),linear-gradient(90deg,#1e6076 1px,transparent 1px);background-size:28px 28px;opacity:.4}.boat-svg{position:relative;width:75%;max-width:390px;filter:drop-shadow(0 15px 12px #0009);transition:transform .25s}.boat-caption{position:absolute;left:14px;top:12px;font-size:10px;letter-spacing:1px;color:var(--muted)}.boat-caption span{color:var(--cyan)}
+.settings{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:11px;color:var(--muted)}input,select{width:100%;border:1px solid #234258;background:#081725;color:var(--text);padding:9px;border-radius:8px;font:inherit;font-size:12px}input[type=range]{padding:0;accent-color:var(--cyan)}.field .range-line{display:flex;justify-content:space-between;color:var(--cyan);font-size:11px}
+.status-list{padding:5px 15px 12px}.status-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #183247;font-size:12px}.status-row:last-child{border-bottom:0}.status-label{color:var(--muted)}.status{display:flex;align-items:center;gap:6px}.status i{width:6px;height:6px;background:var(--green);border-radius:50%}.status.warning{color:var(--amber)}.status.warning i{background:var(--amber)}
+.chart{height:110px;padding:5px 12px 12px}.chart canvas{width:100%;height:100%}.log{max-height:145px;overflow:auto;padding:4px 15px 12px}.log-entry{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #183247;font-size:11px}.log-time{color:#66869c;white-space:nowrap}.log-msg{color:#c8d8e4}.log-msg.warn{color:var(--amber)}.log-msg.good{color:var(--green)}
+footer{max-width:1500px;margin:0 auto;padding:0 20px 20px;color:#58768a;font-size:10px;display:flex;justify-content:space-between;gap:12px}
+@media(max-width:950px){main{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}header{padding:14px}.header-right .desktop{display:none}}
+@media(max-width:520px){main{padding:10px}.settings{grid-template-columns:1fr}.map-wrap{height:300px}.metric .value{font-size:20px}.brand h1{font-size:14px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="logo">⌁</div><div><div class="eyebrow">MARINE DIGITAL TWIN · PROTOTYPE 0.1</div><h1>Цифровой двойник безэкипажного судна</h1></div></div>
+ <div class="header-right"><span class="desktop">Локальная симуляция</span><span><i class="live-dot"></i><span id="connectionText">СИСТЕМА ГОТОВА</span></span></div>
+</header>
+<main>
+ <section class="left">
+  <div class="panel">
+   <div class="panel-head"><h2>01 / НАВИГАЦИОННАЯ КАРТА</h2><span class="tag" id="missionTag">МИССИЯ НЕ ЗАПУЩЕНА</span></div>
+   <div class="map-wrap"><canvas id="mapCanvas" aria-label="Схематическая карта движения судна"></canvas><div class="map-overlay"><b id="mapCoords">55.7512° N, 37.6184° E</b><span id="mapState">Ожидание запуска миссии</span></div></div>
+   <div class="map-legend"><span><i class="key" style="background:#31d7e8"></i>Траектория</span><span><i class="key" style="background:#58e0ae"></i>Контрольные точки</span><span><i class="key" style="background:#ffcb70"></i>Текущее положение</span></div>
+   <div class="controls"><button class="primary" id="startBtn">▶ Запустить миссию</button><button id="pauseBtn" disabled>Ⅱ Пауза</button><button id="resetBtn">↺ Сбросить</button><button id="addPointBtn">＋ Добавить точку</button></div>
+  </div>
+  <div class="panel">
+   <div class="panel-head"><h2>02 / ТЕЛЕМЕТРИЯ</h2><span class="sub">Обновление в реальном времени</span></div>
+   <div class="metrics">
+    <div class="metric"><div class="label">СКОРОСТЬ</div><div class="value"><span id="speedVal">0.0</span><span class="unit">уз</span></div><div class="foot">● В пределах нормы</div></div>
+    <div class="metric"><div class="label">КУРС</div><div class="value"><span id="headingVal">045</span><span class="unit">°</span></div><div class="foot">● Навигация активна</div></div>
+    <div class="metric" id="batteryMetric"><div class="label">ЗАРЯД БАТАРЕИ</div><div class="value"><span id="batteryVal">100</span><span class="unit">%</span></div><div class="foot" id="batteryFoot">● Расход моделируется</div></div>
+    <div class="metric"><div class="label">ОТКЛОНЕНИЕ ОТ КУРСА</div><div class="value"><span id="deviationVal">0.0</span><span class="unit">м</span></div><div class="foot">● Допуск 25 м</div></div>
+   </div>
+  </div>
+  <div class="panel">
+   <div class="panel-head"><h2>03 / ЖУРНАЛ СОБЫТИЙ</h2><span class="sub" id="eventCount">0 событий</span></div>
+   <div class="log" id="eventLog"><div class="log-entry"><span class="log-time">--:--:--</span><span class="log-msg">Система инициализирована. Ожидание команды оператора.</span></div></div>
+  </div>
+ </section>
+ <aside class="right">
+  <div class="panel">
+   <div class="panel-head"><h2>04 / 3D-МОДЕЛЬ СУДНА</h2><span class="tag">ВИРТУАЛЬНЫЙ ОБЪЕКТ</span></div>
+   <div class="boat-scene"><div class="grid-floor"></div><div class="boat-caption">USV-01 <span>● DIGITAL TWIN</span></div>
+    <svg class="boat-svg" id="boatSvg" viewBox="0 0 420 210" role="img" aria-label="Схематическая изометрическая 3D-модель безэкипажного судна">
+     <defs><linearGradient id="hull" x1="0" y1="0" x2="0.8" y2="1"><stop stop-color="#46e1ed"/><stop offset=".48" stop-color="#167e9a"/><stop offset="1" stop-color="#0a344d"/></linearGradient><linearGradient id="deck" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8aeaf0"/><stop offset="1" stop-color="#247a91"/></linearGradient></defs>
+     <ellipse cx="214" cy="151" rx="157" ry="24" fill="#020b12" opacity=".55"/>
+     <path d="M42 105 L205 35 L372 92 L213 163 Z" fill="#0b344a" stroke="#39cddd" stroke-width="1.5"/>
+     <path d="M42 105 L213 163 L205 183 L28 119 Z" fill="#09283c" stroke="#17647c"/>
+     <path d="M213 163 L372 92 L360 113 L213 183 Z" fill="#0b4059" stroke="#1b8ca3"/>
+     <path d="M63 103 L205 45 L350 94 L212 151 Z" fill="url(#hull)" stroke="#70f0f2" stroke-width="1.5"/>
+     <path d="M97 103 L204 59 L313 96 L210 139 Z" fill="url(#deck)" stroke="#a0f5f5" stroke-width="1"/>
+     <path d="M150 86 L204 64 L260 84 L206 108 Z" fill="#0b293b" stroke="#4ad8e4"/>
+     <path d="M171 82 L204 69 L237 81 L205 94 Z" fill="#163e53" stroke="#31d7e8"/>
+     <path d="M182 76 L205 67 L226 75 L204 84 Z" fill="#7ce8ed" opacity=".8"/>
+     <path d="M199 67 L203 48 L211 45 L208 70 Z" fill="#164b62" stroke="#4cdbe8"/>
+     <path d="M203 48 L205 36 L209 35 L211 47 Z" fill="#6de9ed"/>
+     <path d="M111 102 L131 94 L145 99 L125 108 Z M271 100 L292 91 L306 96 L285 105 Z" fill="#092b3f" stroke="#46d5e1"/>
+     <path d="M85 105 L112 115 M112 115 L138 124 M138 124 L164 133 M164 133 L190 142" fill="none" stroke="#8af7f3" stroke-width="1.2" opacity=".8"/>
+     <circle cx="205" cy="87" r="4" fill="#a6ffff"/><circle cx="205" cy="87" r="10" fill="none" stroke="#52e5ed" opacity=".6"/>
+     <path d="M210 87 L244 73" stroke="#52e5ed" stroke-dasharray="3 3"/>
+     <text x="248" y="72" fill="#8deff2" font-size="9">GNSS / IMU</text>
+     <path d="M63 103 L205 45 L350 94" fill="none" stroke="#b8ffff" stroke-width="1" opacity=".7"/>
+    </svg>
+   </div>
+   <div class="status-list">
+    <div class="status-row"><span class="status-label">Двигательная установка</span><span class="status"><i></i>Норма</span></div>
+    <div class="status-row"><span class="status-label">Навигационные датчики</span><span class="status" id="sensorStatus"><i></i>Активны</span></div>
+    <div class="status-row"><span class="status-label">Канал связи</span><span class="status" id="linkStatus"><i></i>Подключён</span></div>
+    <div class="status-row"><span class="status-label">Режим работы</span><span class="status" id="modeStatus"><i></i>Ожидание</span></div>
+   </div>
+   <div class="controls"><button id="sensorBtn">Имитировать отказ датчика</button><button id="linkBtn">Имитировать потерю связи</button></div>
+  </div>
+  <div class="panel">
+   <div class="panel-head"><h2>05 / ПАРАМЕТРЫ МИССИИ</h2><span class="sub">Настройки симуляции</span></div>
+   <div class="settings">
+    <div class="field"><label for="vesselName">Название судна</label><input id="vesselName" value="USV-01"></div>
+    <div class="field"><label for="missionName">Название миссии</label><input id="missionName" value="Патрульный маршрут"></div>
+    <div class="field"><label for="speedRange">Заданная скорость</label><div class="range-line"><span>1–12 узлов</span><b id="speedSetting">5.0 уз</b></div><input id="speedRange" type="range" min="1" max="12" step=".5" value="5"></div>
+    <div class="field"><label for="batteryRange">Начальный заряд</label><div class="range-line"><span>10–100%</span><b id="batterySetting">100%</b></div><input id="batteryRange" type="range" min="10" max="100" step="5" value="100"></div>
+    <div class="field"><label for="faultMode">Модель отклонения</label><select id="faultMode"><option value="normal">Нормальная навигация</option><option value="drift">Боковой дрейф</option><option value="wind">Влияние ветра</option></select></div>
+    <div class="field"><label for="routeMode">Маршрут</label><select id="routeMode"><option value="patrol">Патрульный маршрут</option><option value="triangle">Треугольный маршрут</option><option value="short">Короткий маршрут</option></select></div>
+   </div>
+   <div class="controls"><button id="applyBtn" class="primary">Применить параметры</button></div>
+  </div>
+  <div class="panel">
+   <div class="panel-head"><h2>06 / РАСХОД ЭНЕРГИИ</h2><span class="sub">Условная модель</span></div>
+   <div class="chart"><canvas id="chartCanvas"></canvas></div>
+  </div>
+ </aside>
+</main>
+<footer><span>Учебный прототип · Все данные симулируются локально</span><span>Версия 0.1.0 · Не предназначено для управления реальным судном</span></footer>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const map = $('mapCanvas'), ctx = map.getContext('2d'), chart = $('chartCanvas'), cctx = chart.getContext('2d');
+let running=false, paused=false, elapsed=0, battery=100, speed=0, heading=45, deviation=0, sensorFault=false, linkLost=false, tick=0, events=0, points=[], routeIndex=0, progress=0, history=[];
+const routes = {
+ patrol:[{x:.14,y:.75},{x:.27,y:.58},{x:.43,y:.62},{x:.59,y:.36},{x:.78,y:.43},{x:.87,y:.22}],
+ triangle:[{x:.2,y:.75},{x:.77,y:.7},{x:.52,y:.22},{x:.2,y:.75}],
+ short:[{x:.18,y:.72},{x:.45,y:.53},{x:.68,y:.62}]
+};
+function setRoute(){points=routes[$('routeMode').value].map(p=>({...p}));routeIndex=0;progress=0;drawMap()}
+function log(msg,type=''){const row=document.createElement('div');row.className='log-entry';const d=new Date();const time=d.toLocaleTimeString('ru-RU',{hour12:false});row.innerHTML=`<span class="log-time">${time}</span><span class="log-msg ${type}"></span>`;row.querySelector('.log-msg').textContent=msg;$('eventLog').prepend(row);events++;$('eventCount').textContent=events+' событий';while($('eventLog').children.length>35)$('eventLog').lastChild.remove()}
+function fitCanvas(canvas,context){const r=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=Math.max(1,Math.floor(r.width*dpr));canvas.height=Math.max(1,Math.floor(r.height*dpr));context.setTransform(dpr,0,0,dpr,0,0);return {w:r.width,h:r.height}}
+function drawMap(){
+ const {w,h}=fitCanvas(map,ctx);ctx.clearRect(0,0,w,h);
+ ctx.fillStyle='#081a29';ctx.fillRect(0,0,w,h);
+ // subtle bathymetry contours
+ for(let i=0;i<7;i++){ctx.beginPath();ctx.ellipse(w*.55,h*.52,80+i*43,28+i*22,-.22,0,Math.PI*2);ctx.strokeStyle=`rgba(36,112,135,${.08+i*.012})`;ctx.lineWidth=1;ctx.stroke()}
+ ctx.strokeStyle='#15354a';ctx.lineWidth=1;
+ for(let x=0;x<w;x+=34){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+ for(let y=0;y<h;y+=34){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+ // decorative shore / contours
+ ctx.beginPath();ctx.moveTo(0,h*.12);ctx.bezierCurveTo(w*.2,h*.25,w*.1,h*.48,w*.32,h*.55);ctx.bezierCurveTo(w*.5,h*.62,w*.4,h*.85,w*.64,h);ctx.lineTo(0,h);ctx.closePath();ctx.fillStyle='#0b2937';ctx.fill();
+ ctx.strokeStyle='#1b4c5b';ctx.lineWidth=2;ctx.stroke();
+ // planned route
+ if(points.length){ctx.beginPath();points.forEach((p,i)=>{const x=p.x*w,y=p.y*h;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.strokeStyle='#31d7e8';ctx.lineWidth=2;ctx.setLineDash([5,5]);ctx.stroke();ctx.setLineDash([]);
+ points.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x*w,p.y*h,5,0,Math.PI*2);ctx.fillStyle=i<routeIndex?'#58e0ae':'#0b2432';ctx.fill();ctx.strokeStyle='#58e0ae';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#9ab8c9';ctx.font='10px Segoe UI';ctx.fillText('WP-'+(i+1),p.x*w+8,p.y*h-8)})}
+ const pos=currentPos(), x=pos.x*w,y=pos.y*h;
+ ctx.beginPath();ctx.arc(x,y,16,0,Math.PI*2);ctx.fillStyle='#ffcb7020';ctx.fill();ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle='#ffcb70';ctx.fill();ctx.strokeStyle='#ffcb70';ctx.lineWidth=2;ctx.stroke();
+ ctx.save();ctx.translate(x,y);ctx.rotate((heading-90)*Math.PI/180);ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(7,7);ctx.lineTo(0,4);ctx.lineTo(-7,7);ctx.closePath();ctx.fillStyle='#ffcb70';ctx.fill();ctx.restore();
+ ctx.fillStyle='#5f8197';ctx.font='10px Segoe UI';ctx.fillText('СХЕМАТИЧЕСКАЯ КАРТА · НЕ НАВИГАЦИОННЫЕ ДАННЫЕ',12,h-12);
+ $('mapCoords').textContent=(55.7512+(pos.y-.5)*.018).toFixed(4)+'° N, '+(37.6184+(pos.x-.5)*.03).toFixed(4)+'° E';
+}
+function currentPos(){if(!points.length)return{x:.14,y:.75};if(!running||points.length===1)return points[0];const a=points[Math.min(routeIndex,points.length-1)],b=points[Math.min(routeIndex+1,points.length-1)];return{x:a.x+(b.x-a.x)*progress,y:a.y+(b.y-a.y)*progress}}
+function drawChart(){const {w,h}=fitCanvas(chart,cctx);cctx.clearRect(0,0,w,h);cctx.strokeStyle='#18384b';cctx.lineWidth=1;for(let i=1;i<4;i++){cctx.beginPath();cctx.moveTo(0,h*i/4);cctx.lineTo(w,h*i/4);cctx.stroke()}if(history.length<2)return;const max=100;cctx.beginPath();history.forEach((v,i)=>{const x=i/(Math.max(1,history.length-1))*w,y=h-(v/max)*(h-8)-4;i?cctx.lineTo(x,y):cctx.moveTo(x,y)});cctx.strokeStyle='#31d7e8';cctx.lineWidth=2;cctx.stroke();const last=history[history.length-1];cctx.lineTo(w,h);cctx.lineTo(0,h);cctx.closePath();cctx.fillStyle='#31d7e81c';cctx.fill();cctx.fillStyle='#8ca6b9';cctx.font='10px Segoe UI';cctx.fillText('Заряд, %',5,12)}
+function updateUI(){
+ $('speedVal').textContent=speed.toFixed(1);$('headingVal').textContent=String(Math.round(heading)%360).padStart(3,'0');$('batteryVal').textContent=Math.max(0,battery).toFixed(0);$('deviationVal').textContent=deviation.toFixed(1);
+ $('batteryMetric').classList.toggle('warn',battery<25);$('batteryFoot').textContent=battery<25?'▲ Низкий заряд':'● Расход моделируется';
+ $('missionTag').textContent=running?(paused?'МИССИЯ НА ПАУЗЕ':'МИССИЯ АКТИВНА'):'МИССИЯ НЕ ЗАПУЩЕНА';
+ $('connectionText').textContent=linkLost?'СВЯЗЬ ПОТЕРЯНА':(running?'СИМУЛЯЦИЯ АКТИВНА':'СИСТЕМА ГОТОВА');
+ $('mapState').textContent=running?(paused?'Миссия приостановлена':'Судно следует по маршруту'):'Ожидание запуска миссии';
+ $('modeStatus').innerHTML='<i></i>'+(running?(paused?'Пауза':'Автономный ход'):'Ожидание');
+ $('sensorStatus').className='status'+(sensorFault?' warning':'');$('sensorStatus').innerHTML='<i></i>'+(sensorFault?'Отказ датчика':'Активны');
+ $('linkStatus').className='status'+(linkLost?' warning':'');$('linkStatus').innerHTML='<i></i>'+(linkLost?'Нет связи':'Подключён');
+ $('startBtn').disabled=running&&!paused;$('pauseBtn').disabled=!running;$('pauseBtn').textContent=paused?'▶ Продолжить':'Ⅱ Пауза';
+}
+function start(){if(battery<=0){log('Недостаточно заряда для запуска миссии.','warn');return}if(routeIndex>=points.length-1){routeIndex=0;progress=0}running=true;paused=false;log('Миссия «'+$('missionName').value+'» запущена.','good');updateUI()}
+function reset(){running=false;paused=false;elapsed=0;battery=Number($('batteryRange').value);speed=0;heading=45;deviation=0;routeIndex=0;progress=0;sensorFault=false;linkLost=false;history=[battery];setRoute();updateUI();log('Симуляция сброшена. Параметры готовы к запуску.')}
+function tickSim(){if(running&&!paused){tick++;elapsed+=.25;const target=Number($('speedRange').value);speed+=(target-speed)*.18;if(!linkLost){const a=points[Math.min(routeIndex,points.length-1)],b=points[Math.min(routeIndex+1,points.length-1)];if(b){const dx=b.x-a.x,dy=b.y-a.y;heading=(Math.atan2(-dy,dx)*180/Math.PI+360)%360;const drift=$('faultMode').value==='drift'?.018:($('faultMode').value==='wind'?.009:0);deviation=drift*1000*(.4+Math.abs(Math.sin(tick/9)));progress+=.006*(target/5);if(progress>=1){progress=0;routeIndex++;log('Контрольная точка '+routeIndex+' пройдена.','good');if(routeIndex>=points.length-1){running=false;speed=0;log('Маршрут завершён. Миссия окончена.','good')}}} }
+ battery=Math.max(0,battery-(.0018*target*(1+(sensorFault?.2:0))));if(battery<=0){running=false;speed=0;log('Заряд батареи исчерпан. Симуляция остановлена.','warn')}if(tick%4===0){history.push(battery);if(history.length>50)history.shift()}drawMap();drawChart();updateUI()}}
+$('startBtn').addEventListener('click',start);$('pauseBtn').addEventListener('click',()=>{if(!running)return;paused=!paused;log(paused?'Миссия приостановлена оператором.':'Миссия продолжена.');updateUI()});$('resetBtn').addEventListener('click',reset);
+$('addPointBtn').addEventListener('click',()=>{const last=points[points.length-1]||{x:.5,y:.5};points.push({x:Math.min(.9,Math.max(.1,last.x+(Math.random()-.5)*.2)),y:Math.min(.85,Math.max(.15,last.y+(Math.random()-.5)*.2))});log('Добавлена контрольная точка WP-'+points.length+'.');drawMap()});
+$('sensorBtn').addEventListener('click',()=>{sensorFault=!sensorFault;log(sensorFault?'ВНИМАНИЕ: смоделирован отказ навигационного датчика.':'Навигационный датчик восстановлен.',sensorFault?'warn':'good');updateUI()});
+$('linkBtn').addEventListener('click',()=>{linkLost=!linkLost;log(linkLost?'ВНИМАНИЕ: смоделирована потеря канала связи.':'Канал связи восстановлен.',linkLost?'warn':'good');updateUI()});
+$('speedRange').addEventListener('input',e=>$('speedSetting').textContent=Number(e.target.value).toFixed(1)+' уз');$('batteryRange').addEventListener('input',e=>$('batterySetting').textContent=e.target.value+'%');
+$('applyBtn').addEventListener('click',()=>{if(running){log('Нельзя менять параметры во время активной миссии. Поставьте миссию на паузу или сбросьте её.','warn');return}battery=Number($('batteryRange').value);history=[battery];setRoute();log('Параметры применены для судна «'+$('vesselName').value+'».','good');updateUI()});
+window.addEventListener('resize',()=>{drawMap();drawChart()});
+setRoute();history=[battery];drawChart();updateUI();log('Цифровой двойник готов. Данные являются учебной симуляцией.','good');
+setInterval(tickSim,250);
+})();
+</script>
+</body>
+</html>
